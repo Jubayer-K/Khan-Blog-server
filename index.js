@@ -44,6 +44,13 @@ async function run() {
       res.send(result);
     })
 
+    // save comment data
+    app.post('/comments',async(req,res)=>{
+      const commentData = req.body
+      const result = await commentCollection.insertOne(commentData)
+      res.send(result);
+    })
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
