@@ -36,6 +36,12 @@ async function run() {
       res.send(result);
     });
 
+    // sending comment data
+    app.get("/comments", async (req, res) => {
+      const result = await commentCollection.find().toArray();
+      res.send(result);
+    });
+
     // single data 
     app.get('/blogs/:id' , async(req,res)=>{
       const id = req.params.id
@@ -44,6 +50,12 @@ async function run() {
       res.send(result);
     })
 
+    // save blog data
+    app.post('/blogs',async(req,res)=>{
+      const blogData = req.body
+      const result = await blogsCollection.insertOne(blogData)
+      res.send(result);
+    })
     // save comment data
     app.post('/comments',async(req,res)=>{
       const commentData = req.body
