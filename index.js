@@ -30,6 +30,7 @@ async function run() {
   try {
     const blogsCollection = client.db("khanBlogDB").collection("allBlogs");
     const commentCollection = client.db("khanBlogDB").collection("comments");
+    const wishlistCollection = client.db("khanBlogDB").collection("wishlists");
 
     app.get("/blogs", async (req, res) => {
       const result = await blogsCollection.find().toArray();
@@ -42,45 +43,52 @@ async function run() {
       res.send(result);
     });
 
-    // single data 
-    app.get('/blogs/:id' , async(req,res)=>{
-      const id = req.params.id
-      const query = {_id : new ObjectId(id)}
-      const result = await blogsCollection.findOne(query)
+    // single data
+    app.get("/blogs/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await blogsCollection.findOne(query);
       res.send(result);
-    })
+    });
 
     // save blog data
-    app.post('/blogs',async(req,res)=>{
-      const blogData = req.body
-      const result = await blogsCollection.insertOne(blogData)
+    app.post("/blogs", async (req, res) => {
+      const blogData = req.body;
+      const result = await blogsCollection.insertOne(blogData);
       res.send(result);
-    })
+    });
     // save comment data
-    app.post('/comments',async(req,res)=>{
-      const commentData = req.body
-      const result = await commentCollection.insertOne(commentData)
+    app.post("/comments", async (req, res) => {
+      const commentData = req.body;
+      const result = await commentCollection.insertOne(commentData);
       res.send(result);
-    })
+    });
+
+    // save wishlist data
+    app.post("/wishlist", async (req, res) => {
+      const wishlistData = req.body;
+      const result = await wishlistCollection.insertOne(wishlistData);
+      res.send(result);
+    });
 
     // update blog
-    app.put('/blogs/:id',async(req,res)=>{
+    app.put("/blogs/:id", async (req, res) => {
       const id = req.params.id;
-      const filter = {_id: new ObjectId(id)}
-      const options = {upsert : true};
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
       const updatedBlog = req.body;
-      const blog ={
-        $set :{
-          title : updatedBlog.title,
-          image_url : updatedBlog.image,
-          category : updatedBlog.category,
-          short_description : updatedBlog.shortDescription,
-          long_description : updatedBlog.longDescription, 
-        }
-      }
-      const result = await blogsCollection.updateOne(filter,blog,options)
+      const blog = {
+        $set: {
+          title: updatedBlog.title,
+          image_url: updatedBlog.image,
+          category: updatedBlog.category,
+          short_description: updatedBlog.shortDescription,
+          long_description: updatedBlog.longDescription,
+        },
+      };
+      const result = await blogsCollection.updateOne(filter, blog, options);
       res.send(result);
-    })
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
