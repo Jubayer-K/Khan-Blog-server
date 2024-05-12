@@ -36,6 +36,10 @@ async function run() {
       const result = await blogsCollection.find().toArray();
       res.send(result);
     });
+    app.get("/wishlist", async (req, res) => {
+      const result = await wishlistCollection.find().toArray();
+      res.send(result);
+    });
 
     // sending comment data
     app.get("/comments", async (req, res) => {
@@ -50,6 +54,19 @@ async function run() {
       const result = await blogsCollection.findOne(query);
       res.send(result);
     });
+    // single wishlist data
+    app.get("/wishlist/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await wishlistCollection.findOne(query);
+      res.send(result);
+    });
+
+    // user wishlist data
+    app.get("/my-wishlist/:email", async (req, res) => {
+      const result = await wishlistCollection.find({ user_email: req.params.email }).toArray();
+      res.send(result)
+    })
 
     // save blog data
     app.post("/blogs", async (req, res) => {
