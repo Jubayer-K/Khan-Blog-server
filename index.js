@@ -17,6 +17,24 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
+
+// verify jwt middleware
+
+const verifyToken = (req, res, next) => {
+  const token = req.cookies?.token;
+  if (!token) return res.status(401).send({ message: "unauthorized access" });
+  if (token) {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+      if (err) {
+        console.log(err);
+        return res.status(401).send({ message: "unauthorized access" });
+      }
+      req.user = decoded;
+      next();
+    });
+  }
+};
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.bv8l8yc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -57,8 +75,8 @@ async function run() {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-          maxAge:0,
-        } )
+          maxAge: 0,
+        })
         .send({ success: true });
     });
 
@@ -109,9 +127,14 @@ async function run() {
     });
 
     // user wishlist data
-    app.get("/my-wishlist/:email", async (req, res) => {
+    app.get("/my-wishlist/:email", verifyToken, async (req, res) => {
+      const tokenEmail = req.user.email;
+      const email = req.params.email;
+      if (tokenEmail !== email) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
       const result = await wishlistCollection
-        .find({ user_email: req.params.email })
+        .find({ user_email: email })
         .toArray();
       res.send(result);
     });
