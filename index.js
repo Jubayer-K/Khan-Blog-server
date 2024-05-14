@@ -10,7 +10,10 @@ const port = process.env.PORT || 5000;
 const app = express();
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: [
+    "https://eleventh-assignment-khan-blog.firebaseapp.com",
+    "https://eleventh-assignment-khan-blog.web.app",
+  ],
   credentials: true,
   optionsSuccessStatus: 200,
 };
